@@ -25,7 +25,7 @@ const HeroCarousel = () => {
   const carouselItems = [1, 2, 3, 4];
 
   return (
-    <div className="flex-1 w-full  pt-14 lg:p-4 ">
+    <div className="flex-1 max-w-screen overflow-hidden  pt-14 lg:p-4 ">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
           {carouselItems.map((item, index) => (

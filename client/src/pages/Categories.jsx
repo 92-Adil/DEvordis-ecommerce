@@ -57,10 +57,10 @@ const Categories = () => {
     },
   ];
   const [active, setActive] = useState("Phones");
-   const handleCategory=(category)=>{
-      dispatch(setSelectedCategory(category))
-      navigate("/#Products")
-    }
+  const handleCategory = (category) => {
+    dispatch(setSelectedCategory(category));
+    navigate("/#Products");
+  };
   return (
     <div className="p-6 mt-8">
       {/* Header  */}
@@ -83,17 +83,23 @@ const Categories = () => {
       >
         <CarouselContent>
           {categoryArray.map((item, index) => (
-            <CarouselItem key={index} className="basis-1/2 md:basis-1/4 lg:basis-1/5">
+            <CarouselItem
+              key={index}
+              className="basis-1/2 md:basis-1/4 lg:basis-1/5"
+            >
               <div className="p-1 ">
                 <Card
                   className={`flex flex-col  aspect-square items-center justify-center cursor-pointer py-20 h-20 ${
-                    active === item.name ? "bg-red-400 transition-all duration-400" : ""
+                    active === item.name
+                      ? "bg-red-400 transition-all duration-400"
+                      : ""
                   }`}
-                  onClick={() => {setActive(item.name),handleCategory(item.name)}}
-                  
+                  onClick={() => {
+                    setActive(item.name), handleCategory(item.name);
+                  }}
                 >
                   <CardContent>
-                    <img className="" src={`${item.image}`} alt="" />
+                    <img className="w-35 h-30" src={`${item.image}`} alt="" />
 
                     <span className="text-sm text-center">{item.name}</span>
                   </CardContent>

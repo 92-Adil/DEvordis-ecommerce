@@ -223,9 +223,7 @@ export default function NavBar() {
                     <DropdownMenuItem onClick={()=>navigate('/deliverOrder')} className="gap-2 hover:bg-gray-700 cursor-pointer rounded-md">
                       <Truck size={18} /> My Deliver orders
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="gap-2 hover:bg-gray-700 rounded-md">
-                      <Star size={18} /> My Reviews
-                    </DropdownMenuItem>
+                   
                   </>
                 )}
 
