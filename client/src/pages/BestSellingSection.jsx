@@ -6,72 +6,77 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
-import { Heart, Eye } from "lucide-react";
+import { Heart, Eye, Star } from "lucide-react";
+import { useSelector } from "react-redux";
 
-const products = [
-  {
-    id: Math.random() * 10,
-    name: "Keyboard",
-    price: 120,
-    originalPrice: 160,
-    discount: 40,
-    image: "/coat.png",
-    rating: 4.5,
-    reviews: 88,
-  },
-  {
-    id: Math.random() * 10,
-    name: "Keyboard",
-    price: 120,
-    originalPrice: 160,
-    discount: 40,
-    image: "/coat.png",
-    rating: 4.5,
-    reviews: 88,
-  },
-  {
-    id: Math.random() * 10,
-    name: "Keyboard",
-    price: 120,
-    originalPrice: 160,
-    discount: 40,
-    image: "/iphone.png",
-    rating: 4.5,
-    reviews: 88,
-  },
-  {
-    id: Math.random() * 10,
-    name: "Keyboard",
-    price: 120,
-    originalPrice: 160,
-    discount: 40,
-    image: "/keyboard.png",
-    rating: 4.5,
-    reviews: 88,
-  },
-  {
-    id: Math.random() * 10,
-    name: "Keyboard",
-    price: 120,
-    originalPrice: 160,
-    discount: 40,
-    image: "/keyboard.png",
-    rating: 4.5,
-    reviews: 88,
-  },
-  {
-    id: Math.random() * 10,
-    name: "Keyboard",
-    price: 120,
-    originalPrice: 160,
-    discount: 40,
-    image: "/coat.png",
-    rating: 4.5,
-    reviews: 88,
-  },
-];
+// const products = [
+//   {
+//     id: Math.random() * 10,
+//     name: "Keyboard",
+//     price: 120,
+//     originalPrice: 160,
+//     discount: 40,
+//     image: "/coat.png",
+//     rating: 4.5,
+//     reviews: 88,
+//   },
+//   {
+//     id: Math.random() * 10,
+//     name: "Keyboard",
+//     price: 120,
+//     originalPrice: 160,
+//     discount: 40,
+//     image: "/coat.png",
+//     rating: 4.5,
+//     reviews: 88,
+//   },
+//   {
+//     id: Math.random() * 10,
+//     name: "Keyboard",
+//     price: 120,
+//     originalPrice: 160,
+//     discount: 40,
+//     image: "/iphone.png",
+//     rating: 4.5,
+//     reviews: 88,
+//   },
+//   {
+//     id: Math.random() * 10,
+//     name: "Keyboard",
+//     price: 120,
+//     originalPrice: 160,
+//     discount: 40,
+//     image: "/keyboard.png",
+//     rating: 4.5,
+//     reviews: 88,
+//   },
+//   {
+//     id: Math.random() * 10,
+//     name: "Keyboard",
+//     price: 120,
+//     originalPrice: 160,
+//     discount: 40,
+//     image: "/keyboard.png",
+//     rating: 4.5,
+//     reviews: 88,
+//   },
+//   {
+//     id: Math.random() * 10,
+//     name: "Keyboard",
+//     price: 120,
+//     originalPrice: 160,
+//     discount: 40,
+//     image: "/coat.png",
+//     rating: 4.5,
+//     reviews: 88,
+//   },
+// ];
 
 const BestSellingSection = () => {
+  let { products, isLoading, isError } = useSelector((store) => store.product);
+  products = products.filter((pro) => pro?.rating >= 4);
+  console.log(products);
+
   return (
     <div className="p-6 mt-8">
       {/* Header*/}
@@ -98,9 +103,8 @@ const BestSellingSection = () => {
       <Carousel className={"relative"}>
         <CarouselContent>
           {products.map((product) => (
-            <CarouselItem key={product.id} className="basis-1/2 lg:basis-1/4">
+            <CarouselItem key={product._id} className="basis-1/2 lg:basis-1/4">
               <div className="relative bg-white p-4 rounded shadow hover:shadow-md transition group">
-                {/* Icons */}
                 <div className="absolute top-2 right-2 flex flex-col gap-1">
                   <button className="bg-white p-2 rounded-full shadow">
                     <Heart className="h-4 w-4 text-gray-600" />
@@ -111,24 +115,41 @@ const BestSellingSection = () => {
                 </div>
 
                 <img
-                  src={product.image}
-                  alt={product.name}
+                  src={product.thumbnail}
+                  alt={product.title}
                   className="w-full h-50 object-contain bg-[#f5f5f5] mx-auto mb-4"
                 />
-                <h3 className="text-sm font-medium mb-1">{product.name}</h3>
+                <h3 className="text-sm font-medium mb-1">{product.title}</h3>
                 <div className="flex items-center gap-2 text-sm mb-2">
                   <span className="text-red-500 font-semibold">
                     ${product.price}
                   </span>
-                  <span className="line-through text-gray-400">
-                    ${product.originalPrice}
-                  </span>
                 </div>
 
-                <div className="text-yellow-500 text-sm mb-3">
-                  {"⭐".repeat(Math.floor(product.rating))}{" "}
-                  <span className="text-gray-500 text-xs">
-                    ({product.reviews})
+                <div className="flex items-center text-yellow-500 text-sm mb-3">
+                  {/* {"⭐".repeat(Math.floor(product.rating))}{" "} */}
+                  {[...Array(5)].map((_, index) => {
+                    const currentRate = index + 1;
+                    return (
+                      <div className="flex   " key={index}>
+                        <Star
+                          size={20}
+                          fill={
+                            currentRate <= Math.floor(product.rating)
+                              ? "yellow"
+                              : "gray"
+                          }
+                          color={
+                            currentRate <= Math.floor(product.rating)
+                              ? "yellow"
+                              : "gray"
+                          }
+                        />
+                      </div>
+                    );
+                  })}
+                  <span className="   text-gray-500 text-xs">
+                  ({product.noOfReviews || 0})
                   </span>
                 </div>
 

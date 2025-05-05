@@ -11,35 +11,56 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Camera, Computer, ComputerIcon, Phone } from "lucide-react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { setSelectedCategory } from "@/redux/searchSlice";
 
 const Categories = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const categoryArray = [
     {
-      image: "/CellPhone.png",
-      name: "Phones",
+      image: "/Woman's Fashion.png",
+      name: "Woman's Fashion",
     },
     {
-      image: "/Computer.png",
-      name: "Computers",
+      image: "/Men's Fashion.png",
+      name: "Men's Fashion",
     },
     {
-      image: "/SmartWatch.png",
-      name: "SmartWatches",
+      image: "/Electronics.png",
+      name: "Electronics",
     },
     {
-      image: "/Gamepad.png",
-      name: "Cameras",
+      image: "/Home & Lifestyle.png",
+      name: "Home & Lifestyle",
     },
     {
-      image: "/Headphone.png",
-      name: "HeadPhones",
+      image: "/Medicine.png",
+      name: "Medicine",
     },
     {
-      image: "/Gamepad.png",
-      name: "Gaming",
+      image: "/Sports & Outdoor.png",
+      name: "Sports & Outdoor",
+    },
+    {
+      image: "/Baby's & Toys.png",
+      name: "Baby's & Toys",
+    },
+    {
+      image: "/Groceries & Pets.png",
+      name: "Groceries & Pets",
+    },
+    {
+      image: "/Health & Beauty.png",
+      name: "Health & Beauty",
     },
   ];
   const [active, setActive] = useState("Phones");
+   const handleCategory=(category)=>{
+      dispatch(setSelectedCategory(category))
+      navigate("/#Products")
+    }
   return (
     <div className="p-6 mt-8">
       {/* Header  */}
@@ -68,7 +89,8 @@ const Categories = () => {
                   className={`flex flex-col  aspect-square items-center justify-center cursor-pointer py-20 h-20 ${
                     active === item.name ? "bg-red-400 transition-all duration-400" : ""
                   }`}
-                  onClick={() => setActive(item.name)}
+                  onClick={() => {setActive(item.name),handleCategory(item.name)}}
+                  
                 >
                   <CardContent>
                     <img className="" src={`${item.image}`} alt="" />
