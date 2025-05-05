@@ -21,6 +21,7 @@ import wishlistReducer from "./wishlist.js"
 import authReducer from "./authSlice.js"
 import productReducer from "./productSlice.js"
 import orderReducer from "./orderSlice.js"
+import searchReducer from "./searchSlice.js"
 
 const rootReducer=combineReducers({
     cart:cartReducer,
@@ -28,6 +29,7 @@ const rootReducer=combineReducers({
     auth:authReducer,
     product:productReducer,
     order:orderReducer,
+    search:searchReducer
 })
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 

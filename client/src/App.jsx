@@ -29,6 +29,7 @@ import OrderList from "./pages/admin/OrderList";
 import UpdateOrder from "./pages/admin/UpdateOrder";
 import { AdminRoute, AuthenticatedUser, ProtectedRoute } from "./components/ProtectedRoutes";
 import DeliverOrder from "./pages/DeliverOrder";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 const appRouter = createBrowserRouter([
   {
@@ -78,6 +79,11 @@ const appRouter = createBrowserRouter([
         path: "/about",
         element: <ProtectedRoute><About /></ProtectedRoute>,
       },
+      {
+        path:"/payment-success",
+        element:<ProtectedRoute><PaymentSuccess/></ProtectedRoute>
+      },
+
       {
         path:"/deliverOrder",
         element:<ProtectedRoute><DeliverOrder/></ProtectedRoute>

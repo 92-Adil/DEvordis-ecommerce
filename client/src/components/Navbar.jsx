@@ -31,6 +31,7 @@ import { logout } from "@/redux/authSlice";
 import { clearCart } from "@/redux/cartSlice";
 import { Badge } from "./ui/badge";
 import { clearWishlist } from "@/redux/wishlist";
+import { setSearchQuery } from "@/redux/searchSlice";
 export default function NavBar() {
   // const user=true
   const links = [
@@ -40,6 +41,7 @@ export default function NavBar() {
     { name: "Sign Up", href: "#" },
   ];
   const [active, setActive] = useState("Home");
+  const [query,setQuery]=useState("")
   // const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
@@ -86,6 +88,21 @@ export default function NavBar() {
     dispatch(clearWishlist());
     toast.success(res.data.message);
   };
+  
+  const searchHandler= async(e)=>{
+    e.preventDefault();
+    try {
+      // console.log("Search query:", query);
+      dispatch(setSearchQuery(query))
+      navigate("/#Products")
+      
+    } catch (error) {
+      console.log("Error in the searchHandler is this",error);
+      
+    }
+  }
+ 
+ 
 
   return (
     <>
@@ -148,9 +165,12 @@ export default function NavBar() {
               <div className="relative">
                 <Input
                   placeholder="What are you looking for?"
+                  name="search"
+                  value={query}
+                  onChange={(e)=>setQuery(e.target.value)}
                   className="pl-4 pr-10 py-2 w-64 rounded-md border"
                 />
-                <Search className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+                <Search onClick={searchHandler} className=" cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
               </div>
               <Heart
                 onClick={() => navigate("/wishlist")}

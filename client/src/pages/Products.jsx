@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -9,18 +9,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Heart, Eye, Star } from "lucide-react";
 import axios from "axios";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "@/redux/cartSlice";
 import { addWishlistItem } from "@/redux/wishlist";
 import { PRODUCT_API_END_POINT } from "@/utils/constant.js";
 import { fetchAllProducts } from "@/redux/productSlice";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { setClearQuery } from "@/redux/searchSlice";
 
 const Products = () => {
   // const [products, setProducts] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const sectionRef = useRef(null);
+
+  const location = useLocation();
 
   // useEffect(() => {
   //   axios
@@ -35,16 +39,40 @@ const Products = () => {
   //     .then((res) => setProducts(res.data.products))
   //     .catch((err) => console.log("Error in the fecting all products is", err));
   // }, []);
-  const { products, isLoading, isError } = useSelector(
-    (store) => store.product
-  );
+  let { products, isLoading, isError } = useSelector((store) => store.product);
   // console.log("products from store", products);
+  const { searchQuery,selectedCategory } = useSelector((store) => store.search);
+  if (searchQuery) {
+    products = products.filter((pro) =>
+      pro.title
+        .split(" ")
+        .join(",")
+        .toLowerCase()
+        .includes(searchQuery.split(" ").join(",").toLowerCase())
+    );
+    // console.log(products);
+  }
+
+  if (selectedCategory) {
+    products = products.filter(
+      (pro) => pro.category?.[0]?.toLowerCase() === selectedCategory.toLowerCase()
+    );
+    // console.log(products);
+    
+  }
+
+  useEffect(() => {
+    if (location.hash === "#Products" && sectionRef.current) {
+      sectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location]);
+
   useEffect(() => {
     dispatch(fetchAllProducts());
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="p-6 mt-8">
+    <div id="Products" ref={sectionRef} className="p-6 mt-8">
       {/* Header and Timer */}
       <div className="flex items-center mb-6">
         <div>
@@ -108,8 +136,9 @@ const Products = () => {
                       {[...Array(5)].map((_, index) => {
                         const currentRate = index + 1;
                         return (
-                          <>
+                          <div key={index}>
                             <Star
+
                               size={20}
                               fill={
                                 currentRate <= Math.floor(product.rating)
@@ -122,7 +151,7 @@ const Products = () => {
                                   : "gray"
                               }
                             />
-                          </>
+                          </div>
                         );
                       })}
                       <span className="text-gray-500 pl-4 text-xs">
@@ -147,6 +176,7 @@ const Products = () => {
       )}
       <div className="flex items-center justify-center pt-5">
         <Button
+        onClick={() => dispatch(setClearQuery())}
           className={
             "bg-red-500 cursor-pointer text-white px-10 py-7 text-center hover:bg-red-700"
           }
