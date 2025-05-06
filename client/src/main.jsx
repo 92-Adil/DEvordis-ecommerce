@@ -19,10 +19,11 @@ const Custom = ({ children }) => {
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
+    <Toaster />
       <Custom>
         <PersistGate loading={null} persistor={persistor}>
           <App />
-          <Toaster />
+          
         </PersistGate>
       </Custom>
     </Provider>
