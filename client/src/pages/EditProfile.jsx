@@ -28,7 +28,7 @@ const EditProfile = () => {
     console.log(input);
     try {
       settLoading(true);
-      const updatedUser = await axios.post(
+      const updatedUser = await axios.put(
         `${USER_API_END_POINT}/profile/update`,
         input,
         {

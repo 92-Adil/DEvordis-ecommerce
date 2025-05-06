@@ -1,3 +1,4 @@
+import sanitize from "mongo-sanitize";
 import { Product } from "../models/product.model.js";
 import {
   deleteMedia,
@@ -7,7 +8,8 @@ import {
 
 export const createProduct = async (req, res) => {
   try {
-    const { title, description, price, stock, category, brand } = req.body;
+    const cleanData =sanitize(req.body)
+    const { title, description, price, stock, category, brand } = cleanData;
     const thumbnailUrl = req.file;
     if (
       !title ||
@@ -117,7 +119,7 @@ export const getAllProducts = async (req, res) => {
 };
 export const getProductById = async (req, res) => {
   try {
-    const productId = req.params.productId;
+    const productId = sanitize(req.params.productId);
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(400).json({
@@ -136,7 +138,7 @@ export const getProductById = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const productId = req.params.productId;
+    const productId = sanitize(req.params.productId);
     const product = await Product.findById(productId);
     // if(product.thumbnailUrl){
     //   await deleteMedia(product.thumbnailUrl)

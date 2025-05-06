@@ -1,9 +1,11 @@
+import sanitize from "mongo-sanitize";
 import { Order } from "../models/order.model.js";
 
 export const createOrder = async (req, res) => {
   try {
+    const cleanData =sanitize(req.body)
     const { orderItems, name,postalCode,country, address, city, phoneNumber, email, totalPrice } =
-      req.body;
+      cleanData;
     if(!orderItems||!name||!address||!city||!phoneNumber||!email||!totalPrice){
         return res.status(400).json({
             message:"All the * filed are required"
@@ -39,7 +41,7 @@ export const createOrder = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
   try {
-    const orderId = req.params.orderId;
+    const orderId = sanitize(req.params.orderId);
     const { isDelivered } = req.body;
     let order = await Order.findById(orderId).populate({path:"userId"});
     if (!order) {
@@ -65,7 +67,7 @@ export const updateOrderStatus = async (req, res) => {
 
 export const deleteOrder = async (req, res) => {
   try {
-    const orderId = req.params.orderId;
+    const orderId = sanitize(req.params.orderId);
     const order = await Order.findByIdAndDelete(orderId);
     if (!order) {
       return res.status(400).json({
@@ -102,7 +104,7 @@ export const getAllOrder = async (req, res) => {
 
 export const getOrderById = async (req, res) => {
   try {
-    const orderId = req.params.orderId;
+    const orderId = sanitize(req.params.orderId);
     const order = await Order.findById(orderId).populate({path:"userId"}).populate({path:"orderItems.product"});
 
     if (!order) {

@@ -1,9 +1,12 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import sanitize from "mongo-sanitize";
+
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const cleanData=sanitize(req.body)
+    const { name, email, password } = cleanData;
     if (!name || !email || !password) {
       return res.status(400).json({
         message: "All field are required",
@@ -31,7 +34,8 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const cleanData=sanitize(req.body)
+    const { email, password } = cleanData;
     if (!email || !password) {
       return res.status(400).json({
         message: "All field are required",
@@ -96,7 +100,8 @@ export const logout = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const { name, email, phoneNumber, address } = req.body;
+    const cleanData= sanitize(req.body)
+    const { name, email, phoneNumber, address } = cleanData;
 
     const userId = req.id;
     let user = await User.findById(userId);

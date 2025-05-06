@@ -67,7 +67,7 @@ const EditProduct = () => {
 
       formData.append("brand", input.brand);
       formData.append("sideImages", input.sideImages);
-      const res = await axios.post(
+      const res = await axios.put(
         `${PRODUCT_API_END_POINT}/update/${params.productId}`,
         formData,
         {

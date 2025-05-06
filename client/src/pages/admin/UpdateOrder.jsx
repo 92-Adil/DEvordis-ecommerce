@@ -36,7 +36,7 @@ const UpdateOrder = () => {
     try {
       setLoading(true);
       if (order.isPaid) {
-        const res = await axios.post(
+        const res = await axios.put(
           `${ORDER_API_END_POINT}/updateOrderStatus/${order._id}`,
           { isDelivered: deliver },
           {

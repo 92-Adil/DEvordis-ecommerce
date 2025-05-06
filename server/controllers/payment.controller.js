@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import dotenv from "dotenv";
 import { Order } from "../models/order.model.js";
 import { Product } from "../models/product.model.js";
+import sanitize from "mongo-sanitize";
 dotenv.config({});
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -10,7 +11,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export const createCheckoutSession = async (req, res) => {
   
   try {
-    const orderData = req.body;
+    const cleanData =sanitize(req.body)
+    const orderData = cleanData;
     if (!orderData.orderItems && orderData.orderItems.length === 0) {
       return res.status(400).json({
         message: "Order Item mot found",
