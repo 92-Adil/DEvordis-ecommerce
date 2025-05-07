@@ -1,52 +1,59 @@
 // import { auth } from "@/components/firebase";
 // import { signInWithEmailAndPassword } from "firebase/auth";
-import { loginSuccess, setLoading } from "@/redux/authSlice";
+import {
+  // loginSuccess,
+  loginUser,
+  // logoutUser,
+  // setLoading,
+} from "@/redux/authSlice";
 import { USER_API_END_POINT } from "@/utils/constant.js";
-import axios from "axios";
+// import axios from "axios";
 import { Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 const Login = () => {
-  
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const {loading,user}= useSelector(store=>store.auth);
-  const dispatch= useDispatch()
-  const navigate= useNavigate()
+  const { loading } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // const [loading,setLoading]=useState(false)
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    try {
-      dispatch(setLoading(true))
-      const res = await axios.post(
-        `${USER_API_END_POINT}/login`,
-        { email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      if(res.data.success){
-        dispatch(loginSuccess(res.data.user))
-        
-        toast.success(res.data.message)
-        navigate("/")
-      }
+    // try {
+    //   dispatch(setLoading(true))
+    //   const res = await axios.post(
+    //     `${USER_API_END_POINT}/login`,
+    //     { email, password },
+    //     {
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       withCredentials: true,
+    //     }
+    //   );
+    //   if(res.data.success){
+    //     dispatch(loginSuccess(res.data.user))
 
-    } catch (error) {
-      console.log("Error in the on Submit handler of the Login", error);
-      toast.error(error.response.data.message);
-    }finally{
-      dispatch(setLoading(false))
-      setEmail("")
-      setPassword("")
-    }
+    //     toast.success(res.data.message)
+    //     navigate("/")
+    //   }
+
+    // } catch (error) {
+    //   console.log("Error in the on Submit handler of the Login", error);
+    //   toast.error(error.response.data.message);
+    // }finally{
+    //   dispatch(setLoading(false))
+    //   setEmail("")
+    //   setPassword("")
+    // }
+
+    dispatch(loginUser({ email, password, navigate }));
+    
   };
   //ye firebase ky through kiya tha login
   // const onSubmitHandler=async(e)=>{

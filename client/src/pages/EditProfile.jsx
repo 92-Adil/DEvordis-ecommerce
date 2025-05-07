@@ -2,52 +2,56 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant.js";
-import { toast } from "sonner";
-import { useDispatch } from "react-redux";
-import { loginSuccess } from "@/redux/authSlice";
+// import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import {  updateUserProfile } from "@/redux/authSlice";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 const EditProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [loading, settLoading] = useState();
+  const{loading,user}=useSelector(store=>store.auth)
+  // const [loading, settLoading] = useState();
   const [input, setInput] = useState({
-    name: "",
-    email: "",
-    phoneNumber: "",
-    address: "",
+    name: user.name || "",
+      email: user.email || "",
+      phoneNumber: user.phoneNumber || "",
+      address: user.address || "",
   });
   const onChangeHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
+  
   const onClickHandler = async (e) => {
     e.preventDefault();
     console.log(input);
-    try {
-      settLoading(true);
-      const updatedUser = await axios.put(
-        `${USER_API_END_POINT}/profile/update`,
-        input,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      if (updatedUser.data.success) {
-        dispatch(loginSuccess(updatedUser.data.user));
-        toast.success(updatedUser.data.message);
-        setInput({ name: "", email: "", phoneNumber: "", address: "" });
-      }
-    } catch (error) {
-      console.log("Error in edit profile handler", error);
-    } finally {
-      settLoading(false);
-    }
+    // try {
+    //   settLoading(true);
+    //   const updatedUser = await axios.put(
+    //     `${USER_API_END_POINT}/profile/update`,
+    //     input,
+    //     {
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       withCredentials: true,
+    //     }
+    //   );
+    //   if (updatedUser.data.success) {
+    //     dispatch(loginSuccess(updatedUser.data.user));
+    //     toast.success(updatedUser.data.message);
+    //     setInput({ name: "", email: "", phoneNumber: "", address: "" });
+    //   }
+    // } catch (error) {
+    //   console.log("Error in edit profile handler", error);
+    // } finally {
+    //   settLoading(false);
+    // }
+
+    dispatch(updateUserProfile(input))
   };
   return (
     <div className="flex  p-6 bg-gray-50">

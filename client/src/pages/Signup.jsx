@@ -6,10 +6,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+// import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant.js";
-import { setLoading } from "@/redux/authSlice";
-import { toast } from "sonner";
+import {  signupUser } from "@/redux/authSlice";
+// import { toast } from "sonner";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -20,31 +20,32 @@ const Signup = () => {
   const navigate = useNavigate();
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    try {
-      dispatch(setLoading(true));
-      const res = await axios.post(
-        `${USER_API_END_POINT}/register`,
-        { name, email, password },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      if (res.data.success) {
-        navigate("/login");
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      console.log("Error in the on submit handler", error);
-      toast.error(error.response?.data?.message );
-    } finally {
-      dispatch(setLoading(false));
-      setEmail("")
-      setName("")
-      setPassword("")
-    }
+    // try {
+    //   dispatch(setLoading(true));
+    //   const res = await axios.post(
+    //     `${USER_API_END_POINT}/register`,
+    //     { name, email, password },
+    //     {
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       withCredentials: true,
+    //     }
+    //   );
+    //   if (res.data.success) {
+    //     navigate("/login");
+    //     toast.success(res.data.message);
+    //   }
+    // } catch (error) {
+    //   console.log("Error in the on submit handler", error);
+    //   toast.error(error.response?.data?.message );
+    // } finally {
+    //   dispatch(setLoading(false));
+    //   setEmail("")
+    //   setName("")
+    //   setPassword("")
+    // }
+    dispatch(signupUser({ name,email, password, navigate }))
   };
   //ye firebase se kiya hain
   // const onSubmitHandler= async(e)=>{

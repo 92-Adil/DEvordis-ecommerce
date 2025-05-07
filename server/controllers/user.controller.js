@@ -5,7 +5,7 @@ import sanitize from "mongo-sanitize";
 
 export const register = async (req, res) => {
   try {
-    const cleanData=sanitize(req.body)
+    const cleanData = sanitize(req.body);
     const { name, email, password } = cleanData;
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -34,7 +34,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const cleanData=sanitize(req.body)
+    const cleanData = sanitize(req.body);
     const { email, password } = cleanData;
     if (!email || !password) {
       return res.status(400).json({
@@ -59,8 +59,14 @@ export const login = async (req, res) => {
     const tokenData = {
       UserId: user._id,
     };
-    const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
-      expiresIn: "1d",
+    // const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
+    //   expiresIn: "1d",
+    // });
+    const accessToken = jwt.sign(tokenData, process.env.ACCESS_SECRET, {
+      expiresIn: "15m",
+    });
+    const refreshToken = jwt.sign(tokenData, process.env.REFRESH_SECRET, {
+      expiresIn: "7d",
     });
     user = {
       _id: user._id,
@@ -70,18 +76,37 @@ export const login = async (req, res) => {
       role: user.role,
       phoneNumber: user.phoneNumber,
     };
-    return res
-      .status(200)
-      .cookie("token", token, {
-        maxAge: 1 * 24 * 60 * 60 * 1000,
-        httpsOnly: true,
-        sameSite: "strict",
-      })
-      .json({
-        message: `Welcome ${user.name}`,
-        success: true,
-        user,
-      });
+    // return res
+    //   .status(200)
+    //   .cookie("token", token, {
+    //     maxAge: 1 * 24 * 60 * 60 * 1000,
+    //     httpsOnly: true,
+    //     sameSite: "strict",
+    //   })
+    //   .json({
+    //     message: `Welcome ${user.name}`,
+    //     success: true,
+    //     user,
+    //   });
+
+     res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+     
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      
+    });
+    return res.status(200).json({
+          message: `Welcome ${user.name}`,
+          success: true,
+          user,
+          accessToken
+        })
   } catch (error) {
     console.log("Error in the Login controller is", error);
   }
@@ -89,10 +114,15 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
-      message: "User Logout successfully",
-      success: true,
-    });
+    // return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+    //   message: "User Logout successfully",
+    //   success: true,
+    // });
+    return res
+      .clearCookie("accessToken")
+      .clearCookie("refreshToken")
+      .status(200)
+      .json({ message: "Logged out successfully", success: true });
   } catch (error) {
     console.log("Error in the logout controller is", error);
   }
@@ -100,7 +130,7 @@ export const logout = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const cleanData= sanitize(req.body)
+    const cleanData = sanitize(req.body);
     const { name, email, phoneNumber, address } = cleanData;
 
     const userId = req.id;
@@ -129,11 +159,49 @@ export const updateUser = async (req, res) => {
       address: user.address,
     };
     return res.status(200).json({
-        message:"User Updated successfully",
-        success:true,
-        user
-    })
+      message: "User Updated successfully",
+      success: true,
+      user,
+    });
   } catch (error) {
     console.log("Error n the update the user profile", error);
+  }
+};
+
+export const refreshAccessToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Refresh token not found" });
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+
+    const newAccessToken = jwt.sign(
+      { UserId: decoded.UserId },
+      process.env.ACCESS_SECRET,
+      {
+        expiresIn: "15m",
+      }
+    );
+
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Access token refreshed",
+        accessToken: newAccessToken,
+      });
+  } catch (error) {
+    return res.status(403).json({
+      message: "Invalid refresh token",
+      success: false,
+    });
   }
 };

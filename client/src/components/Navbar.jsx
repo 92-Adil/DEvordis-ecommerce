@@ -23,11 +23,11 @@ import { Link, useNavigate } from "react-router-dom";
 
 // import { doc, getDoc } from "firebase/firestore";
 // import { auth, db } from "./firebase";
-import { toast } from "sonner";
-import axios from "axios";
+// import { toast } from "sonner";
+// import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/redux/authSlice";
+import {  logoutUser } from "@/redux/authSlice";
 import { clearCart } from "@/redux/cartSlice";
 import { Badge } from "./ui/badge";
 import { clearWishlist } from "@/redux/wishlist";
@@ -80,13 +80,15 @@ export default function NavBar() {
   // }, []);
 
   const handleLogout = async () => {
-    const res = await axios.get(`${USER_API_END_POINT}/logout`);
-    navigate("/login");
-    // dispatch(setUser(null))
-    dispatch(logout());
-    dispatch(clearCart());
-    dispatch(clearWishlist());
-    toast.success(res.data.message);
+    // const res = await axios.get(`${USER_API_END_POINT}/logout`);
+    // navigate("/login");
+    // // dispatch(setUser(null))
+    // dispatch(logout());
+    // dispatch(clearCart());
+    // dispatch(clearWishlist());
+    // toast.success(res.data.message);
+    
+    dispatch(logoutUser(navigate));
   };
   
   const searchHandler= async(e)=>{
