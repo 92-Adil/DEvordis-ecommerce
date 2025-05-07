@@ -7,6 +7,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
+
     const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -31,16 +32,17 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const res = await axios.get(
-          "http://localhost:8080/api/v1/refresh-token",
-          {
-            withCredentials: true,
-          }
-        );
+        // const res = await axios.get(
+        //   "http://localhost:8080/api/v1/refresh-token",
+        //   {
+        //     withCredentials: true,
+        //   }
+        // );
+        const res = await api.get("refresh-token");
 
         const newAccessToken = res.data.accessToken;
 
-        localStorage.setItem("token", newAccessToken);
+        localStorage.setItem("accessToken", newAccessToken);
 
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);

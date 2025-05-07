@@ -28,10 +28,12 @@ const CreatedProductTables = () => {
   const [loading, setLoading] = useState(false);
   //   const navigate=useNavigate()
   useEffect(() => {
+    setLoading(true)
     axios
       .get(`${PRODUCT_API_END_POINT}/getProducts`)
       .then((res) => setProducts(res.data.products))
-      .catch((err) => console.log("Error in the fecting all products is", err));
+      .catch((err) => console.log("Error in the fecting all products is", err))
+      .finally(()=>setLoading(false));
   }, [reload]);
   const deleteProductHandler = async (productId) => {
     try {
@@ -63,29 +65,38 @@ const CreatedProductTables = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {products.map((product) => (
+          {loading ? (
             <TableRow>
-              <TableCell className="">
-                <img
-                  className="w-8 h-8 object-contain"
-                  src={product.thumbnail}
-                  alt=""
-                />
-              </TableCell>
-              <TableCell>{product.title}</TableCell>
-              <TableCell>${product.price}</TableCell>
-              <TableCell className="">
-                <Link to={`/admin/editProduct/${product._id}`}>
-                  <Edit2Icon />
-                </Link>
-              </TableCell>
-              <TableCell className="cursor-pointer">
-                
+            <TableCell colSpan={5} className="text-center">
+              <div className="flex flex-col justify-center items-center text-red-500 text-2xl">
+                <Loader2 className="animate-spin w-20 h-20 text-red-400" />
+                Please wait
+              </div>
+            </TableCell>
+          </TableRow>
+          ) : (
+            products.map((product) => (
+              <TableRow key={product._id}>
+                <TableCell className="">
+                  <img
+                    className="w-8 h-8 object-contain"
+                    src={product.thumbnail}
+                    alt=""
+                  />
+                </TableCell>
+                <TableCell>{product.title}</TableCell>
+                <TableCell>${product.price}</TableCell>
+                <TableCell className="">
+                  <Link to={`/admin/editProduct/${product._id}`}>
+                    <Edit2Icon />
+                  </Link>
+                </TableCell>
+                <TableCell className="cursor-pointer">
                   <Trash2 onClick={() => deleteProductHandler(product._id)} />
-              
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

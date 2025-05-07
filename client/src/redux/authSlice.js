@@ -59,6 +59,7 @@ export const logoutUser = createAsyncThunk(
         
         { withCredentials: true }
       );
+      localStorage.removeItem("accessToken");
       toast.success(res.data.message);
       navigate("/login");
       return true;
