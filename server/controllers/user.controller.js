@@ -176,7 +176,12 @@ export const refreshAccessToken = async (req, res) => {
     }
 
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
-
+    if (!decoded) {
+      return res.status(401).json({
+        message: "Invalid refresh token",
+        success: false,
+      });
+    }
     const newAccessToken = jwt.sign(
       { UserId: decoded.UserId },
       process.env.ACCESS_SECRET,
