@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { clearCart } from "@/redux/cartSlice";
+import { placeOrder } from "@/redux/orderSlice";
 import { ORDER_API_END_POINT, PURCHASE_API_END_POINT } from "@/utils/constant";
-import axios from "axios";
+// import axios from "axios";
 import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,7 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 const Checkout = () => {
   const { items, totalAmount } = useSelector((store) => store.cart);
-  const [loading, setLoading] = useState(false);
+  const {order,isLoading:loading,isError}=useSelector((store)=>store.order)
+  // const [loading, setLoading] = useState(false);
   const dispatch =useDispatch()
   const shipping = 0;
   const total = totalAmount + shipping;
@@ -23,18 +25,67 @@ const Checkout = () => {
     email: "",
     postalCode: "",
   });
-  const payload = {
-    ...input,                      
-    orderItems: items.map(item => ({
-      product: item._id,           
-      quantity: item.quantity,     
-      price: item.price,           
-    })),
-    totalPrice: totalAmount,      
-  };
+  // const payload = {
+  //   ...input,                      
+  //   orderItems: items.map(item => ({
+  //     product: item._id,           
+  //     quantity: item.quantity,     
+  //     price: item.price,           
+  //   })),
+  //   totalPrice: totalAmount,      
+  // };
   const onChangeHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
+  // const onClickHandler = async (e) => {
+  //   e.preventDefault();
+  //   if (
+  //     !input.name ||
+  //     !input.address ||
+  //     !input.city ||
+  //     !input.phoneNumber ||
+  //     !input.email
+  //   ) {
+  //     toast.error("All the * field are required");
+  //     return;
+  //   }
+  //   console.log(input);
+  //   try {
+  //     setLoading(true);
+  //     const res = await axios.post(
+  //       `${ORDER_API_END_POINT}/createOrder`,
+  //       payload,
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         withCredentials: true,
+  //       }
+  //     );
+
+  //     if (res.data.success) {
+  //       const Orderdata = res.data.order;
+  //       const stripeUrl = await axios.post(
+  //         `${PURCHASE_API_END_POINT}/create-checkout-session`,
+  //         Orderdata,
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       window.location.href = stripeUrl.data.url;
+  //       dispatch(clearCart())
+        
+  //     }
+  //   } catch (error) {
+  //     console.log("Error in the place order handler", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  
   const onClickHandler = async (e) => {
     e.preventDefault();
     if (
@@ -47,42 +98,35 @@ const Checkout = () => {
       toast.error("All the * field are required");
       return;
     }
-    console.log(input);
+  
+    const payload = {
+      ...input,
+      orderItems: items.map((item) => ({
+        product: item._id,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      totalPrice: totalAmount,
+    };
+  
     try {
-      setLoading(true);
-      const res = await axios.post(
-        `${ORDER_API_END_POINT}/createOrder`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-
-      if (res.data.success) {
-        const Orderdata = res.data.order;
-        const stripeUrl = await axios.post(
-          `${PURCHASE_API_END_POINT}/create-checkout-session`,
-          Orderdata,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
-        window.location.href = stripeUrl.data.url;
-        dispatch(clearCart())
-        
+      // setLoading(true);
+      const actionResult = await dispatch(placeOrder( payload ));
+      
+      
+      const stripeUrl = actionResult.payload;
+      if (stripeUrl) {
+        dispatch(clearCart());
+        window.location.href = stripeUrl;
       }
     } catch (error) {
-      console.log("Error in the place order handler", error);
+      toast.error("Checkout failed. Try again.");
+      console.error("Checkout error:", error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-10">
       <div className="space-y-4">
@@ -213,7 +257,7 @@ const Checkout = () => {
       <div className="space-y-4">
         <h2 className="text-lg font-semibold">Order Summary</h2>
         {items.map((item) => (
-          <div className="flex items-center justify-between">
+          <div key={item._id} className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="w-12 h-12 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
                 <img

@@ -12,7 +12,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "@/redux/cartSlice";
-import { fetchAllProducts } from "@/redux/productSlice";
+// import { fetchAllProducts } from "@/redux/productSlice";
 
 const FlashSales = () => {
   const navigate = useNavigate();

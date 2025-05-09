@@ -1,5 +1,6 @@
 import api from "@/api/axios";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { toast } from "sonner";
 
 export const fetchAllProducts = createAsyncThunk(
   "fetchAllProducts",
@@ -14,6 +15,23 @@ export const fetchAllProducts = createAsyncThunk(
     }
   }
 );
+
+export const deleteProductById = createAsyncThunk(
+  "deleteProductById",
+  async (productId, { rejectWithValue }) => {
+    try {
+      const res = await api.delete(`product/deleteProductById/${productId}`);
+      if (res.data.success) {
+        return { productId, message: res.data.message };
+      } else {
+        return rejectWithValue(res.data.message);
+      }
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message);
+    }
+  }
+);
+
 export const fectchProductById = createAsyncThunk(
   "fectchProductById",
   async (productId) => {
@@ -58,6 +76,21 @@ const productSlice = createSlice({
     builder.addCase(fectchProductById.rejected, (state, action) => {
       state.isLoading = false;
       state.isError = action.payload;
+    });
+    builder.addCase(deleteProductById.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(deleteProductById.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.products = state.products.filter(
+        (product) => product._id !== action.payload.productId
+      );
+      toast.success(action.payload.message);
+    });
+    builder.addCase(deleteProductById.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      toast.error(action.payload);
     });
   },
   // reducers:{

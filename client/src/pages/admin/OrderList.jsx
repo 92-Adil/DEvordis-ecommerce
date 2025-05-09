@@ -7,24 +7,34 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getAllOrders } from "@/redux/orderSlice";
 import { ORDER_API_END_POINT } from "@/utils/constant.js";
-import axios from "axios";
+// import axios from "axios";
 import { Edit2Icon, Loader2, Trash2 } from "lucide-react";
 import React, { use, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const OrderList = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
+  // const [orders, setOrders] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  const dispatch=useDispatch()
   const navigate = useNavigate();
+  
+  const { order:orders, isLoading:loading, isError } = useSelector((state) => state.order);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   axios
+  //     .get(`${ORDER_API_END_POINT}/getAllOrders`, { withCredentials: true })
+  //     .then((res) => setOrders(res.data.orders))
+  //     .catch((error) => console.log(error))
+  //     .finally(() => setLoading(false));
+  // }, []);
+
+  
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`${ORDER_API_END_POINT}/getAllOrders`, { withCredentials: true })
-      .then((res) => setOrders(res.data.orders))
-      .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
-  }, []);
+    dispatch(getAllOrders());
+  }, [dispatch]);
   return (
     <div>
       <Table>
@@ -50,7 +60,7 @@ const OrderList = () => {
             </TableCell>
           </TableRow>
           ) : (
-            orders.map((order) => (
+            Array.isArray(orders)&&orders?.map((order) => (
               <TableRow key={order._id}>
                 <TableCell className="">{order.userId.email}</TableCell>
                 <TableCell>{order.orderItems.length}</TableCell>

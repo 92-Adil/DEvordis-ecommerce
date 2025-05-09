@@ -73,7 +73,7 @@ import { useSelector } from "react-redux";
 // ];
 
 const BestSellingSection = () => {
-  let { products, isLoading, isError } = useSelector((store) => store.product);
+  let { products } = useSelector((store) => store.product);
   products = products.filter((pro) => pro?.rating >= 4);
   console.log(products);
 

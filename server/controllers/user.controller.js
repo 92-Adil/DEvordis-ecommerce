@@ -63,7 +63,7 @@ export const login = async (req, res) => {
     //   expiresIn: "1d",
     // });
     const accessToken = jwt.sign(tokenData, process.env.ACCESS_SECRET, {
-      expiresIn: "15m",
+      expiresIn: "1h",
     });
     const refreshToken = jwt.sign(tokenData, process.env.REFRESH_SECRET, {
       expiresIn: "7d",
@@ -92,7 +92,7 @@ export const login = async (req, res) => {
      res.cookie("accessToken", accessToken, {
       httpOnly: true,
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
      
     });
     res.cookie("refreshToken", refreshToken, {
@@ -186,14 +186,14 @@ export const refreshAccessToken = async (req, res) => {
       { UserId: decoded.UserId },
       process.env.ACCESS_SECRET,
       {
-        expiresIn: "15m",
+        expiresIn: "1h",
       }
     );
 
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
 
     res

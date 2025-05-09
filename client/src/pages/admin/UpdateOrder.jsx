@@ -19,56 +19,87 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ORDER_API_END_POINT } from "@/utils/constant";
-import axios from "axios";
+import { getOrderById, updateOrderStatus } from "@/redux/orderSlice";
+// import { ORDER_API_END_POINT } from "@/utils/constant";
+// import axios from "axios";
 import { Edit2Icon, Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const UpdateOrder = () => {
+  const dispatch = useDispatch();
   const params = useParams();
-  const [order, setOrder] = useState(null);
-  const [deliver, setDeliver] = useState(null);
-  const [reload, setReload] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [order, setOrder] = useState(null);
+  const [deliver, setDeliver] = useState(false);
+  // const [reload, setReload] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const {
+    order,
+    isLoading: loading,
+    isErorr,
+  } = useSelector((store) => store.order);
+  const orderId = params.orderId;
+  // const updateHandler = async () => {
+  //   try {
+  //     setLoading(true);
+  //     if (order.isPaid) {
+  //       const res = await axios.put(
+  //         `${ORDER_API_END_POINT}/updateOrderStatus/${order._id}`,
+  //         { isDelivered: deliver },
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       if (res.data.success) {
+  //         toast.success(res.data.message);
+  //         setReload((prev) => !prev);
+  //       }
+  //     }else{
+  //       toast.error("Paid is not complete")
+  //     }
+  //   } catch (error) {
+  //     console.log("Error in the update handler is ", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   axios
+  //     .get(`${ORDER_API_END_POINT}/getOrderById/${params.orderId}`, {
+  //       withCredentials: true,
+  //     })
+  //     .then((res) => {
+  //       setOrder(res.data.order), setDeliver(res.data.order.isDelivered);
+  //     })
+  //     .catch((error) => console.log(error));
+  // }, [reload]);
+
   const updateHandler = async () => {
-    try {
-      setLoading(true);
-      if (order.isPaid) {
-        const res = await axios.put(
-          `${ORDER_API_END_POINT}/updateOrderStatus/${order._id}`,
-          { isDelivered: deliver },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
-        if (res.data.success) {
-          toast.success(res.data.message);
-          setReload((prev) => !prev);
-        }
-      }else{
-        toast.error("Paid is not complete")
-      }
-    } catch (error) {
-      console.log("Error in the update handler is ", error);
-    } finally {
-      setLoading(false);
+    if (order?.isPaid) {
+      const res= await dispatch(updateOrderStatus({ orderId, isDelivered: deliver }));
+     
+      if (updateOrderStatus.fulfilled.match(res)) {
+        dispatch(getOrderById(orderId));
+        toast.success("Deliver Status Update")
+      } 
     }
   };
+
   useEffect(() => {
-    axios
-      .get(`${ORDER_API_END_POINT}/getOrderById/${params.orderId}`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        setOrder(res.data.order), setDeliver(res.data.order.isDelivered);
-      })
-      .catch((error) => console.log(error));
-  }, [reload]);
+    dispatch(getOrderById(orderId));
+  },[dispatch,orderId]);
+
+  useEffect(() => {
+    if (order) {
+      setDeliver(Boolean(order?.isDelivered));
+    }
+  }, [order]);
 
   return (
     <div className="p-5">
@@ -177,13 +208,11 @@ const UpdateOrder = () => {
                 <TableCell className="">{item?.product?.title}</TableCell>
                 <TableCell>{item?.quantity}</TableCell>
                 <TableCell>{item?.price}</TableCell>
-                {/* <TableCell>{item.isPaid}</TableCell>
-                  <TableCell className="cursor-pointer">
-                    Edit
-                    <Edit2Icon
-                  
-                    />
-                  </TableCell> */}
+                <TableCell>{item.isPaid}</TableCell>
+                <TableCell className="cursor-pointer">
+                  Edit
+                  <Edit2Icon />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -225,12 +254,15 @@ const UpdateOrder = () => {
                     <Label htmlFor="deliver" className="text-right">
                       Deliver Status
                     </Label>
-                    <Input
+                    <select
                       id="deliver"
                       value={deliver}
-                      onChange={(e) => setDeliver(e.target.value)}
-                      className="col-span-3"
-                    />
+                      onChange={(e) => setDeliver(e.target.value === "true")}
+                      className="col-span-3 border border-gray-300 rounded-md px-3 py-2"
+                    >
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
                   </div>
                 </div>
                 <DialogFooter>

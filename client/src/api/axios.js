@@ -38,7 +38,7 @@ api.interceptors.response.use(
         //     withCredentials: true,
         //   }
         // );
-        const res = await api.get("refresh-token");
+        const res = await api.get("refreshToken");
 
         const newAccessToken = res.data.accessToken;
 

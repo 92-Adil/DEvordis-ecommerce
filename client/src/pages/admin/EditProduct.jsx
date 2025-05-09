@@ -28,7 +28,7 @@ const EditProduct = () => {
     stock: "",
     brand: "",
   });
-  const [previewSideImages, setPreviewSideImages] = useState("");
+  // const [previewSideImages, setPreviewSideImages] = useState("");
   const [loading, setLoading] = useState(false);
   const changeEventHandler = (e) => {
     const { name, value } = e.target;
@@ -41,30 +41,29 @@ const EditProduct = () => {
       const sideImagesArray = Array.from(files);
       sideImagesArray.forEach((file) => {
         setInput({ ...input, sideImages: file });
-      
-    });
-
+      });
     }
   };
   const editProductHandler = async () => {
-    // if (
-    //   !input.title ||
-    //   !input.description ||
-    //   !input.price ||
-    //   !input.stock ||
-    //   !input.brand ||
-    //   !input.thumbnailUrl
-    // ) {
-    //   return "ALL Field are required to craete the product";
-    // }
+    if (
+      !input.title ||
+      !input.description ||
+      !input.price ||
+      !input.stock ||
+      !input.brand ||
+      !input.thumbnailUrl
+    ) {
+      return "ALL Field are required to edit the product";
+    }
+
     try {
-        setLoading(true)
+      setLoading(true);
       const formData = new FormData();
       formData.append("title", input.title);
       formData.append("description", input.description);
       formData.append("price", input.price);
       formData.append("stock", input.stock);
-
+      formData.append("discountPercentage", input.discountPercentage);
       formData.append("brand", input.brand);
       formData.append("sideImages", input.sideImages);
       const res = await axios.put(
@@ -168,7 +167,6 @@ const EditProduct = () => {
             onChange={selectSideImages}
             multiple
           />
-          
         </div>
         <div className="flex gap-4">
           <Button

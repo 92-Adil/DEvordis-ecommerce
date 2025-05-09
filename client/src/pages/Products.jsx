@@ -41,7 +41,9 @@ const Products = () => {
   // }, []);
   let { products, isLoading, isError } = useSelector((store) => store.product);
   // console.log("products from store", products);
-  const { searchQuery,selectedCategory } = useSelector((store) => store.search);
+  const { searchQuery, selectedCategory } = useSelector(
+    (store) => store.search
+  );
   if (searchQuery) {
     products = products.filter((pro) =>
       pro.title
@@ -55,10 +57,10 @@ const Products = () => {
 
   if (selectedCategory) {
     products = products.filter(
-      (pro) => pro.category?.[0]?.toLowerCase() === selectedCategory.toLowerCase()
+      (pro) =>
+        pro.category?.[0]?.toLowerCase() === selectedCategory.toLowerCase()
     );
     // console.log(products);
-    
   }
 
   useEffect(() => {
@@ -138,7 +140,6 @@ const Products = () => {
                         return (
                           <div key={index}>
                             <Star
-
                               size={20}
                               fill={
                                 currentRate <= Math.floor(product.rating)
@@ -176,7 +177,7 @@ const Products = () => {
       )}
       <div className="flex items-center justify-center pt-5">
         <Button
-        onClick={() => dispatch(setClearQuery())}
+          onClick={() => dispatch(setClearQuery())}
           className={
             "bg-red-500 cursor-pointer text-white px-10 py-7 text-center hover:bg-red-700"
           }
